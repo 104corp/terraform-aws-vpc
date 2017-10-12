@@ -142,3 +142,33 @@ variable "single_nat_gateway" {
   description = "should be true if you want to provision a single shared NAT Gateway across all of your private networks"
   default     = false
 }
+
+variable "dhcp_options" {
+  description = "should be true if you want to provision a DHCP Options of your VPC"
+  default     = false
+}
+
+variable "domain_name" {
+  description = "should be true if you want to provision a domain_name of your DHCP"
+  default     = ""
+}
+
+variable "domain_name_servers" {
+  description = "should be true if you want to provision domain_name_servers of your DHCP"
+  default     = []
+}
+
+variable "ntp_servers" {
+  description = "should be true if you want to provision ntp_servers of your DHCP"
+  default     = []
+}
+
+variable "netbios_name_servers" {
+  description = "should be true if you want to provision netbios_name_servers of your DHCP"
+  default     = []
+}
+
+variable "netbios_node_type" {
+  description = "should be true if you want to provision netbios_name_servers of your DHCP"
+  default     = ""
+}

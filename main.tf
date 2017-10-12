@@ -171,4 +171,24 @@ resource "aws_route_table_association" "nat" {
   route_table_id = "${element(aws_route_table.nat.*.id, count.index)}"
 }
 
+####################
+### DHCP Options ###
+####################
+resource "aws_vpc_dhcp_options" "main" {
+  count = "${var.dhcp_options}"
 
+  domain_name          = "${var.domain_name}"
+  domain_name_servers  = ["${compact(var.domain_name_servers)}"]
+  ntp_servers          = ["${compact(var.ntp_servers)}"]
+  netbios_name_servers = ["${compact(var.netbios_name_servers)}"]
+  netbios_node_type    = "${var.netbios_node_type}"
+
+  tags = "${merge(var.tags, map("Name", format("%s-set-dhcp", var.name)))}"
+}
+
+resource "aws_vpc_dhcp_options_association" "main" {
+  count = "${var.dhcp_options}"
+
+  dhcp_options_id = "${aws_vpc_dhcp_options.main.id}"
+  vpc_id          = "${aws_vpc.main.id}"
+}
