@@ -5,11 +5,11 @@ env:
 matrix:
   fast_finish: true
   include:
-    - terraform: '0.10.3'
-    - terraform: '0.11.7'
+  - terraform: '0.10.3'
+  - terraform: '0.11.7'
 branches:
   only:
-    - master
+  - master
 before_install:
   # Install tflint
   - "wget https://github.com/wata727/tflint/releases/download/${TFLINT_VER}/tflint_darwin_amd64.zip"
