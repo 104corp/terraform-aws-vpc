@@ -14,9 +14,6 @@ These types of resources are supported:
 * [NAT Gateway](https://www.terraform.io/docs/providers/aws/r/nat_gateway.html)
 * [VPN Gateway](https://www.terraform.io/docs/providers/aws/r/vpn_gateway.html)
 * [VPC Endpoint](https://www.terraform.io/docs/providers/aws/r/vpc_endpoint.html) (S3 and DynamoDB)
-* [RDS DB Subnet Group](https://www.terraform.io/docs/providers/aws/r/db_subnet_group.html)
-* [ElastiCache Subnet Group](https://www.terraform.io/docs/providers/aws/r/elasticache_subnet_group.html)
-* [Redshift Subnet Group](https://www.terraform.io/docs/providers/aws/r/redshift_subnet_group.html)
 * [DHCP Options Set](https://www.terraform.io/docs/providers/aws/r/vpc_dhcp_options.html)
 * [Default VPC](https://www.terraform.io/docs/providers/aws/r/default_vpc.html)
 
@@ -102,14 +99,12 @@ If both `single_nat_gateway` and `one_nat_gateway_per_az` are set to `true`, the
 By default, the module will determine the number of NAT Gateways to create based on the the `max()` of the private subnet lists (`database_subnets`, `elasticache_subnets`, `private_subnets`, and `redshift_subnets`). The module **does not** take into account the number of `intra_subnets`, since the latter are designed to have no Internet access via NAT Gateway.  For example, if your configuration looks like the following:
 
 ```hcl
-database_subnets    = ["10.0.21.0/24", "10.0.22.0/24"]
-elasticache_subnets = ["10.0.31.0/24", "10.0.32.0/24"]
 private_subnets     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24", "10.0.5.0/24"]
-redshift_subnets    = ["10.0.41.0/24", "10.0.42.0/24"]
-intra_subnets       = ["10.0.51.0/24", "10.0.52.0/24", "10.0.53.0/24"]
+public_subnets    = ["10.0.41.0/24", "10.0.42.0/24"]
+nat_subnets       = ["10.0.51.0/24", "10.0.52.0/24", "10.0.53.0/24"]
 ```
 
-Then `5` NAT Gateways will be created since `5` private subnet CIDR blocks were specified.
+Then `3` NAT Gateways will be created since `3` private subnet CIDR blocks were specified.
 
 ### Single NAT Gateway
 

@@ -8,7 +8,7 @@ branches:
   - master
 before_install:
   # Install tflint
-  - "wget https://github.com/wata727/tflint/releases/download/${TFLINT_VER}/tflint_darwin_amd64.zip"
+  - "wget https://github.com/wata727/tflint/releases/download/${TFLINT_VER}/tflint_linux_amd64.zip"
   - "unzip tflint_darwin_amd64.zip && chmod +x tflint"
   # Install Terraform
   - "wget https://releases.hashicorp.com/terraform/0.11.7/terraform_${TERRAFORM_VER}_linux_amd64.zip"
