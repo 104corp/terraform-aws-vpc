@@ -1,6 +1,6 @@
 # AWS VPC Terraform module
 
-[![Help Contribute to Open Source](https://www.codetriage.com/terraform-aws-modules/terraform-aws-vpc/badges/users.svg)](https://www.codetriage.com/terraform-aws-modules/terraform-aws-vpc)
+![Build Status](https://travis-ci.com/104corp/terraform-aws-vpc.svg?branch=master)
 
 Terraform module which creates VPC resources on AWS.
 
