@@ -16,7 +16,7 @@ before_install:
 script:
   # Test case
   # 1. tflint
-  - "ll"
+  - "ls -l"
   - "./tflint"
   # 2. terraform init and fmt
   - "scripts/test_terraform.sh"
