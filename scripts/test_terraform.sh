@@ -1,5 +1,5 @@
 #!/bin/bash
-terraform init -input=false
+./terraform init -input=false
 
 find . -type f -name \"*.tf\" -exec dirname {} \;|sort -u | while read m; do (terraform validate -check-variables=false \"$m\" && echo \"√ $m\") || exit 1 ; done
 
