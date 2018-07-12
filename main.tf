@@ -106,7 +106,7 @@ resource "aws_route_table" "nat" {
 
   vpc_id = "${aws_vpc.this.id}"
 
-  tags = "${merge(map("Name", "${var.name}-intra"), var.nat_route_table_tags, var.tags)}"
+  tags = "${merge(map("Name", "${var.name}-nat"), var.nat_route_table_tags, var.tags)}"
 }
 
 ################
@@ -212,17 +212,10 @@ resource "aws_vpc_endpoint" "s3" {
 }
 
 resource "aws_vpc_endpoint_route_table_association" "private_s3" {
-  count = "${var.create_vpc && var.enable_s3_endpoint ? local.nat_gateway_count : 0}"
+  count = "${var.create_vpc && var.enable_s3_endpoint && length(var.private_subnets) > 0 ? 1 : 0}"
 
   vpc_endpoint_id = "${aws_vpc_endpoint.s3.id}"
-  route_table_id  = "${element(aws_route_table.private.*.id, count.index)}"
-}
-
-resource "aws_vpc_endpoint_route_table_association" "intra_s3" {
-  count = "${var.create_vpc && var.enable_s3_endpoint && length(var.intra_subnets) > 0 ? 1 : 0}"
-
-  vpc_endpoint_id = "${aws_vpc_endpoint.s3.id}"
-  route_table_id  = "${element(aws_route_table.intra.*.id, 0)}"
+  route_table_id  = "${element(aws_route_table.private.*.id, 0)}"
 }
 
 resource "aws_vpc_endpoint_route_table_association" "public_s3" {
@@ -249,17 +242,10 @@ resource "aws_vpc_endpoint" "dynamodb" {
 }
 
 resource "aws_vpc_endpoint_route_table_association" "private_dynamodb" {
-  count = "${var.create_vpc && var.enable_dynamodb_endpoint ? local.nat_gateway_count : 0}"
+  count = "${var.create_vpc && var.enable_dynamodb_endpoint && length(var.private_subnets) > 0 ? 1 : 0}"
 
   vpc_endpoint_id = "${aws_vpc_endpoint.dynamodb.id}"
-  route_table_id  = "${element(aws_route_table.private.*.id, count.index)}"
-}
-
-resource "aws_vpc_endpoint_route_table_association" "intra_dynamodb" {
-  count = "${var.create_vpc && var.enable_dynamodb_endpoint && length(var.intra_subnets) > 0 ? 1 : 0}"
-
-  vpc_endpoint_id = "${aws_vpc_endpoint.dynamodb.id}"
-  route_table_id  = "${element(aws_route_table.intra.*.id, 0)}"
+  route_table_id  = "${element(aws_route_table.private.*.id, 0)}"
 }
 
 resource "aws_vpc_endpoint_route_table_association" "public_dynamodb" {

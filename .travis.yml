@@ -1,0 +1,39 @@
+language: bash
+env:
+  global:
+    - TFLINT_VER='v0.7.0'
+matrix:
+  fast_finish: true
+  include:
+    - terraform: '0.10.3'
+    - terraform: '0.11.7'
+branches:
+  only:
+    - master
+before_install:
+  # Install tflint
+  - "wget https://github.com/wata727/tflint/releases/download/${TFLINT_VER}/tflint_darwin_amd64.zip"
+  - "unzip tflint_darwin_amd64.zip -d /usr/local/bin"
+  # Install Terraform
+  - "wget https://releases.hashicorp.com/terraform/0.11.7/terraform_${terraform}_linux_amd64.zip"
+  - "unzip terraform_${terraform}_linux_amd64.zip -d /usr/local/bin"
+script:
+  # Test case
+  # 1. tflint
+  - "tflint"
+  # 2. terraform init and fmt
+  - "terraform init -input=false"
+  - "find . -type f -name \"*.tf\" -exec dirname {} \;|sort -u | while read m; do (terraform validate -check-variables=false "$m" && echo "√ $m") || exit 1 ; done"
+  - >
+    if [[ -n "$(terraform fmt -write=false)" ]]; then
+      echo "Some terraform files need be formatted, run 'terraform fmt' to fix";
+      exit 1;
+    fi
+notifications:
+  email: false
+  slack:
+    template:
+      - "Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository_slug}@%{branch} by %{author} %{result} in %{duration}"
+      - 'Commit message : %{commit_message}'
+    rooms:
+      secure: "d5lzn87b1LiadF7e8U7mqJL6LvDTsyLBNxiVTygkiqSxxKNoOzl+yANUObO+IaHT92ywOSbF08lWyptdjnL3wd5smDnrL6TJAhOciaem4QYsh5yAEDnwZOQ2A/Ar+VK9A3+ceQXgKwhVBSu3HQYywTQ2PJUlvs9NpuHgWcDS3WQVSCqkcVG2jkCQxCrus5YOU81Pah20DfSJbi973rneSMqDER0kN4ZJ77gjk6dQ4Jf3o3NWiUww2gEvS2QveJn0WBCHKTSN+Ku5bQXxq+HkNDG+KKYwLRGQ9y2lRWDYbs3+NgP3grfQE0nY+peuDhkgx7++eca28ftwZO/bEXd/b9oQLl0Jfo9SpcM200hvQlFvkynLuQXi11bP9ArAM0jRUt8wR8taYpPumfK/vXp6kNYK7+LlUcyKQOJaSHI61R0tNnf869E8IcnH5CiRTX11fG9EsvIfZ/cEiU7C5CX7tCmGfI8mVIWii7hHyDrL++v6n2ZNlgG4/OutZUvySYxiHgniFhzBuJQ9COMj4HOqMwUR3b5g2x8hVnmb/6aTsaTZYl2nf5TAo5z330OY931f+ENKnZ7wqdieWA9oQtFwk7iCdTrnZwBJdskpGuSRs+nQXlmpRHGddPiJjp8KM+d1MBS6eDOLUw+4FsGPQAknfcbbR6hoM7FfyilYeQ0ulH4="

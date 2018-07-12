@@ -80,64 +80,14 @@ output "public_subnets_cidr_blocks" {
   value       = ["${aws_subnet.public.*.cidr_block}"]
 }
 
-output "database_subnets" {
-  description = "List of IDs of database subnets"
-  value       = ["${aws_subnet.database.*.id}"]
+output "nat_subnets" {
+  description = "List of IDs of nat subnets"
+  value       = ["${aws_subnet.nat.*.id}"]
 }
 
-output "database_subnets_cidr_blocks" {
-  description = "List of cidr_blocks of database subnets"
-  value       = ["${aws_subnet.database.*.cidr_block}"]
-}
-
-output "database_subnet_group" {
-  description = "ID of database subnet group"
-  value       = "${element(concat(aws_db_subnet_group.database.*.id, list("")), 0)}"
-}
-
-output "redshift_subnets" {
-  description = "List of IDs of redshift subnets"
-  value       = ["${aws_subnet.redshift.*.id}"]
-}
-
-output "redshift_subnets_cidr_blocks" {
-  description = "List of cidr_blocks of redshift subnets"
-  value       = ["${aws_subnet.redshift.*.cidr_block}"]
-}
-
-output "redshift_subnet_group" {
-  description = "ID of redshift subnet group"
-  value       = "${element(concat(aws_redshift_subnet_group.redshift.*.id, list("")), 0)}"
-}
-
-output "elasticache_subnets" {
-  description = "List of IDs of elasticache subnets"
-  value       = ["${aws_subnet.elasticache.*.id}"]
-}
-
-output "elasticache_subnets_cidr_blocks" {
-  description = "List of cidr_blocks of elasticache subnets"
-  value       = ["${aws_subnet.elasticache.*.cidr_block}"]
-}
-
-output "intra_subnets" {
-  description = "List of IDs of intra subnets"
-  value       = ["${aws_subnet.intra.*.id}"]
-}
-
-output "intra_subnets_cidr_blocks" {
-  description = "List of cidr_blocks of intra subnets"
-  value       = ["${aws_subnet.intra.*.cidr_block}"]
-}
-
-output "elasticache_subnet_group" {
-  description = "ID of elasticache subnet group"
-  value       = "${element(concat(aws_elasticache_subnet_group.elasticache.*.id, list("")), 0)}"
-}
-
-output "elasticache_subnet_group_name" {
-  description = "Name of elasticache subnet group"
-  value       = "${element(concat(aws_elasticache_subnet_group.elasticache.*.name, list("")), 0)}"
+output "nat_subnets_cidr_blocks" {
+  description = "List of cidr_blocks of nat subnets"
+  value       = ["${aws_subnet.nat.*.cidr_block}"]
 }
 
 # Route tables
@@ -151,9 +101,9 @@ output "private_route_table_ids" {
   value       = ["${aws_route_table.private.*.id}"]
 }
 
-output "intra_route_table_ids" {
-  description = "List of IDs of intra route tables"
-  value       = ["${aws_route_table.intra.*.id}"]
+output "nat_route_table_ids" {
+  description = "List of IDs of nat route tables"
+  value       = ["${aws_route_table.nat.*.id}"]
 }
 
 output "nat_ids" {
