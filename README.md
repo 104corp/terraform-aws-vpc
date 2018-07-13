@@ -96,7 +96,7 @@ If both `single_nat_gateway` and `one_nat_gateway_per_az` are set to `true`, the
 
 ### One NAT Gateway per subnet (default)
 
-By default, the module will determine the number of NAT Gateways to create based on the the `max()` of the private subnet lists (`database_subnets`, `elasticache_subnets`, `private_subnets`, and `redshift_subnets`). The module **does not** take into account the number of `intra_subnets`, since the latter are designed to have no Internet access via NAT Gateway.  For example, if your configuration looks like the following:
+By default, the module will determine the number of NAT Gateways to create based on the the `max()` of the private subnet lists.
 
 ```hcl
 private_subnets     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24", "10.0.5.0/24"]
@@ -116,16 +116,6 @@ If `one_nat_gateway_per_az = true` and `single_nat_gateway = false`, then the mo
 
 * The variable `var.azs` **must** be specified.
 * The number of public subnet CIDR blocks specified in `public_subnets` **must** be greater than or equal to the number of availability zones specified in `var.azs`. This is to ensure that each NAT Gateway has a dedicated public subnet to deploy to.
-
-## "private" versus "intra" subnets
-
-By default, if NAT Gateways are enabled, private subnets will be configured with routes for Internet traffic that point at the NAT Gateways configured by use of the above options.
-
-If you need private subnets that should have no Internet routing (in the sense of [RFC1918 Category 1 subnets](https://tools.ietf.org/html/rfc1918)), `intra_subnets` should be specified. An example use case is configuration of AWS Lambda functions within a VPC, where AWS Lambda functions only need to pass traffic to internal resources or VPC endpoints for AWS services.
- 
-Since AWS Lambda functions allocate Elastic Network Interfaces in proportion to the traffic received ([read more](https://docs.aws.amazon.com/lambda/latest/dg/vpc.html)), it can be useful to allocate a large private subnet for such allocations, while keeping the traffic they generate entirely internal to the VPC.
-
-You can add additional tags with `intra_subnet_tags` as with other subnet types.
 
 ## Conditional creation
 
@@ -160,11 +150,6 @@ Terraform version 0.10.3 or newer is required for this module to work.
 |------|-------------|:----:|:-----:|:-----:|
 | azs | A list of availability zones in the region | string | `<list>` | no |
 | cidr | The CIDR block for the VPC. Default value is a valid CIDR, but not acceptable by AWS and should be overriden | string | `0.0.0.0/0` | no |
-| create_database_subnet_group | Controls if database subnet group should be created | string | `true` | no |
-| create_vpc | Controls if VPC should be created (it affects almost all resources) | string | `true` | no |
-| database_subnet_group_tags | Additional tags for the database subnet group | string | `<map>` | no |
-| database_subnet_tags | Additional tags for the database subnets | string | `<map>` | no |
-| database_subnets | A list of database subnets | list | `<list>` | no |
 | default_vpc_enable_classiclink | Should be true to enable ClassicLink in the Default VPC | string | `false` | no |
 | default_vpc_enable_dns_hostnames | Should be true to enable DNS hostnames in the Default VPC | string | `false` | no |
 | default_vpc_enable_dns_support | Should be true to enable DNS support in the Default VPC | string | `true` | no |
@@ -182,15 +167,11 @@ Terraform version 0.10.3 or newer is required for this module to work.
 | enable_dns_hostnames | Should be true to enable DNS hostnames in the VPC | string | `false` | no |
 | enable_dns_support | Should be true to enable DNS support in the VPC | string | `true` | no |
 | enable_dynamodb_endpoint | Should be true if you want to provision a DynamoDB endpoint to the VPC | string | `false` | no |
-| enable_nat_gateway | Should be true if you want to provision NAT Gateways for each of your private networks | string | `false` | no |
 | enable_s3_endpoint | Should be true if you want to provision an S3 endpoint to the VPC | string | `false` | no |
 | enable_vpn_gateway | Should be true if you want to create a new VPN Gateway resource and attach it to the VPC | string | `false` | no |
 | external_nat_ip_ids | List of EIP IDs to be assigned to the NAT Gateways (used in combination with reuse_nat_ips) | list | `<list>` | no |
 | igw_tags | Additional tags for the internet gateway | string | `<map>` | no |
 | instance_tenancy | A tenancy option for instances launched into the VPC | string | `default` | no |
-| intra_route_table_tags | Additional tags for the intra route tables | string | `<map>` | no |
-| intra_subnet_tags | Additional tags for the intra subnets | string | `<map>` | no |
-| intra_subnets | A list of intra subnets | list | `<list>` | no |
 | manage_default_vpc | Should be true to adopt and manage Default VPC | string | `false` | no |
 | map_public_ip_on_launch | Should be false if you do not want to auto-assign public IP on launch | string | `true` | no |
 | name | Name to be used on all the resources as identifier | string | `` | no |
@@ -205,9 +186,6 @@ Terraform version 0.10.3 or newer is required for this module to work.
 | public_route_table_tags | Additional tags for the public route tables | string | `<map>` | no |
 | public_subnet_tags | Additional tags for the public subnets | string | `<map>` | no |
 | public_subnets | A list of public subnets inside the VPC | string | `<list>` | no |
-| redshift_subnet_group_tags | Additional tags for the redshift subnet group | string | `<map>` | no |
-| redshift_subnet_tags | Additional tags for the redshift subnets | string | `<map>` | no |
-| redshift_subnets | A list of redshift subnets | list | `<list>` | no |
 | reuse_nat_ips | Should be true if you don't want EIPs to be created for your NAT Gateways and will instead pass them in via the 'external_nat_ip_ids' variable | string | `false` | no |
 | single_nat_gateway | Should be true if you want to provision a single shared NAT Gateway across all of your private networks | string | `false` | no |
 | tags | A map of tags to add to all resources | string | `<map>` | no |
@@ -219,9 +197,6 @@ Terraform version 0.10.3 or newer is required for this module to work.
 
 | Name | Description |
 |------|-------------|
-| database_subnet_group | ID of database subnet group |
-| database_subnets | List of IDs of database subnets |
-| database_subnets_cidr_blocks | List of cidr_blocks of database subnets |
 | default_network_acl_id | The ID of the default network ACL |
 | default_route_table_id | The ID of the default route table |
 | default_security_group_id | The ID of the security group created by default on VPC creation |
@@ -239,9 +214,6 @@ Terraform version 0.10.3 or newer is required for this module to work.
 | elasticache_subnets | List of IDs of elasticache subnets |
 | elasticache_subnets_cidr_blocks | List of cidr_blocks of elasticache subnets |
 | igw_id | Internet Gateway |
-| intra_route_table_ids | List of IDs of intra route tables |
-| intra_subnets | List of IDs of intra subnets |
-| intra_subnets_cidr_blocks | List of cidr_blocks of intra subnets |
 | nat_ids | List of allocation ID of Elastic IPs created for AWS NAT Gateway |
 | nat_public_ips | List of public Elastic IPs created for AWS NAT Gateway |
 | natgw_ids | List of NAT Gateway IDs |
@@ -251,9 +223,6 @@ Terraform version 0.10.3 or newer is required for this module to work.
 | public_route_table_ids | Route tables |
 | public_subnets | List of IDs of public subnets |
 | public_subnets_cidr_blocks | List of cidr_blocks of public subnets |
-| redshift_subnet_group | ID of redshift subnet group |
-| redshift_subnets | List of IDs of redshift subnets |
-| redshift_subnets_cidr_blocks | List of cidr_blocks of redshift subnets |
 | vgw_id | VPN Gateway |
 | vpc_cidr_block | The CIDR block of the VPC |
 | vpc_enable_dns_hostnames | Whether or not the VPC has DNS hostname support |
@@ -272,7 +241,7 @@ Terraform version 0.10.3 or newer is required for this module to work.
 
 This module has been packaged with [awspec](https://github.com/k1LoW/awspec) tests through test kitchen. To run them:
 
-1. Install [rvm](https://rvm.io/rvm/install) and the ruby version specified in the [Gemfile](https://github.com/terraform-aws-modules/terraform-aws-vpc/tree/master/Gemfile).
+1. Install [rvm](https://rvm.io/rvm/install) and the ruby version specified in the [Gemfile](https://github.com/104corp/terraform-aws-vpc/blob/master/Gemfile).
 2. Install bundler and the gems from our Gemfile:
 ```
 gem install bundler; bundle install
@@ -282,7 +251,9 @@ gem install bundler; bundle install
 
 ## Authors
 
-Module is maintained by [Anton Babenko](https://github.com/antonbabenko) with help from [these awesome contributors](https://github.com/terraform-aws-modules/terraform-aws-vpc/graphs/contributors).
+Module is maintained by [104corp](https://github.com/104corp).
+
+basic fork of [Anton Babenko](https://github.com/antonbabenko)
 
 ## License
 
