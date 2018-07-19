@@ -3,7 +3,7 @@ terraform {
 }
 
 locals {
-  max_subnet_length = "${max(length(var.private_subnets), length(var.elasticache_subnets), length(var.database_subnets), length(var.redshift_subnets))}"
+  max_subnet_length = "${length(var.private_subnets)}"
   nat_gateway_count = "${var.single_nat_gateway ? 1 : (var.one_nat_gateway_per_az ? length(var.azs) : local.max_subnet_length)}"
 }
 
@@ -165,7 +165,7 @@ locals {
 }
 
 resource "aws_eip" "nat" {
-  count = "${var.create_vpc && (var.nat_subnets && !var.reuse_nat_ips) ? local.nat_gateway_count : 0}"
+  count = "${var.create_vpc && !var.reuse_nat_ips ? local.nat_gateway_count : 0}"
 
   vpc = true
 
@@ -173,7 +173,7 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "this" {
-  count = "${var.create_vpc && var.nat_subnets ? local.nat_gateway_count : 0}"
+  count = "${var.create_vpc ? local.nat_gateway_count : 0}"
 
   allocation_id = "${element(local.nat_gateway_ips, (var.single_nat_gateway ? 0 : count.index))}"
   subnet_id     = "${element(aws_subnet.public.*.id, (var.single_nat_gateway ? 0 : count.index))}"
@@ -181,18 +181,6 @@ resource "aws_nat_gateway" "this" {
   tags = "${merge(map("Name", format("%s-%s", var.name, element(var.azs, (var.single_nat_gateway ? 0 : count.index)))), var.nat_gateway_tags, var.tags)}"
 
   depends_on = ["aws_internet_gateway.this"]
-}
-
-resource "aws_route" "private_nat_gateway" {
-  count = "${var.create_vpc && var.nat_subnets ? local.nat_gateway_count : 0}"
-
-  route_table_id         = "${element(aws_route_table.nat.*.id, count.index)}"
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = "${element(aws_nat_gateway.this.*.id, count.index)}"
-
-  timeouts {
-    create = "5m"
-  }
 }
 
 ######################

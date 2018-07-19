@@ -28,24 +28,6 @@ variable "private_subnets" {
   default     = []
 }
 
-variable "database_subnets" {
-  type        = "list"
-  description = "A list of database subnets"
-  default     = []
-}
-
-variable "redshift_subnets" {
-  type        = "list"
-  description = "A list of redshift subnets"
-  default     = []
-}
-
-variable "elasticache_subnets" {
-  type        = "list"
-  description = "A list of elasticache subnets"
-  default     = []
-}
-
 variable "nat_subnets" {
   type        = "list"
   description = "A list of nat subnets"
