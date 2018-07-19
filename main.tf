@@ -165,7 +165,7 @@ locals {
 }
 
 resource "aws_eip" "nat" {
-  count = "${var.create_vpc && !var.reuse_nat_ips ? local.nat_gateway_count : 0}"
+  count = "${var.create_vpc && !var.reuse_nat_ips && length(var.nat_subnets) > 0 ? local.nat_gateway_count : 0}"
 
   vpc = true
 
@@ -173,7 +173,7 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "this" {
-  count = "${var.create_vpc ? local.nat_gateway_count : 0}"
+  count = "${var.create_vpc && length(var.nat_subnets) > 0 ? local.nat_gateway_count : 0}"
 
   allocation_id = "${element(local.nat_gateway_ips, (var.single_nat_gateway ? 0 : count.index))}"
   subnet_id     = "${element(aws_subnet.public.*.id, (var.single_nat_gateway ? 0 : count.index))}"
