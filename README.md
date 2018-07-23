@@ -60,7 +60,7 @@ resource "aws_eip" "nat" {
 Then, pass the allocated IPs as a parameter to this module.
 ```hcl
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+  source = "104corp/vpc/aws"
 
   # The rest of arguments are omitted for brevity
 
@@ -124,7 +124,7 @@ Sometimes you need to have a way to create VPC resources conditionally but Terra
 ```hcl
 # This VPC will not be created
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+  source = "104corp/vpc/aws"
 
   create_vpc = false
   # ... omitted
@@ -137,10 +137,9 @@ Terraform version 0.10.3 or newer is required for this module to work.
 
 ## Examples
 
-* [Simple VPC](https://github.com/terraform-aws-modules/terraform-aws-vpc/tree/master/examples/simple-vpc)
-* [Complete VPC](https://github.com/terraform-aws-modules/terraform-aws-vpc/tree/master/examples/complete-vpc)
-* [Manage Default VPC](https://github.com/terraform-aws-modules/terraform-aws-vpc/tree/master/examples/manage-default-vpc)
-* Few tests and edge cases examples: [#46](https://github.com/terraform-aws-modules/terraform-aws-vpc/tree/master/examples/issue-46-no-private-subnets), [#44](https://github.com/terraform-aws-modules/terraform-aws-vpc/tree/master/examples/issue-44-asymmetric-private-subnets), [#108](https://github.com/terraform-aws-modules/terraform-aws-vpc/tree/master/examples/issue-108-route-already-exists)
+* [Simple VPC](https://github.com/104corp/terraform-aws-vpc/tree/master/examples/simple-vpc)
+* [Complete VPC](https://github.com/104corp/terraform-aws-vpc/tree/master/examples/complete-vpc)
+* [Manage Default VPC](https://github.com/104corp/terraform-aws-vpc/tree/master/examples/manage-default-vpc)
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
