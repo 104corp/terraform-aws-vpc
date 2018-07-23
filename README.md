@@ -1,6 +1,6 @@
 # AWS VPC Terraform module
 
-![Build Status](https://travis-ci.com/104corp/terraform-aws-vpc.svg?branch=master)
+![Build Status](https://travis-ci.com/104corp/terraform-aws-vpc.svg?branch=master) ![LicenseBadge](https://img.shields.io/github/license/104corp/terraform-aws-vpc.svg)
 
 Terraform module which creates VPC resources on AWS.
 
