@@ -1,3 +1,7 @@
+## 2018-07-23 - Release 1.0.0
+
+- release official v1.0.0 version.
+
 ## 2018-07-20 - Release 0.0.3
 
 - when nat subnet is found enable eip and nat gateway.
