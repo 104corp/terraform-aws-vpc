@@ -21,7 +21,7 @@ These types of resources are supported:
 
 ```hcl
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+  source = "104corp/vpc/aws"
 
   name = "my-vpc"
   cidr = "10.0.0.0/16"
