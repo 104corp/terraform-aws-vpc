@@ -9,6 +9,11 @@ output "vpc_cidr_block" {
   value       = "${element(concat(aws_vpc.this.*.cidr_block, list("")), 0)}"
 }
 
+output "azs" {
+  description = "List of AZs of the VPC"
+  value       = ["${var.azs}"]
+}
+
 output "default_security_group_id" {
   description = "The ID of the security group created by default on VPC creation"
   value       = "${element(concat(aws_vpc.this.*.default_security_group_id, list("")), 0)}"
