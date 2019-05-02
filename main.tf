@@ -5,6 +5,9 @@ terraform {
 locals {
   max_subnet_length = "${length(var.private_subnets)}"
   nat_gateway_count = "${var.single_nat_gateway ? 1 : (var.one_nat_gateway_per_az ? length(var.azs) : local.max_subnet_length)}"
+
+  # Use `local.vpc_id` to give a hint to Terraform that subnets should be deleted before secondary CIDR blocks can be free!
+  vpc_id = "${element(concat(aws_vpc_ipv4_cidr_block_association.this.*.vpc_id, aws_vpc.this.*.id, list("")), 0)}"
 }
 
 ######
@@ -13,12 +16,21 @@ locals {
 resource "aws_vpc" "this" {
   count = "${var.create_vpc ? 1 : 0}"
 
-  cidr_block           = "${var.cidr}"
-  instance_tenancy     = "${var.instance_tenancy}"
-  enable_dns_hostnames = "${var.enable_dns_hostnames}"
-  enable_dns_support   = "${var.enable_dns_support}"
+  cidr_block                       = "${var.cidr}"
+  instance_tenancy                 = "${var.instance_tenancy}"
+  enable_dns_hostnames             = "${var.enable_dns_hostnames}"
+  enable_dns_support               = "${var.enable_dns_support}"
+  assign_generated_ipv6_cidr_block = "${var.assign_generated_ipv6_cidr_block}"
 
   tags = "${merge(map("Name", format("%s", var.name)), var.vpc_tags, var.tags)}"
+}
+
+resource "aws_vpc_ipv4_cidr_block_association" "this" {
+  count = "${var.create_vpc && length(var.secondary_cidr_blocks) > 0 ? length(var.secondary_cidr_blocks) : 0}"
+
+  vpc_id = "${aws_vpc.this.id}"
+
+  cidr_block = "${element(var.secondary_cidr_blocks, count.index)}"
 }
 
 ###################
@@ -189,7 +201,7 @@ resource "aws_nat_gateway" "this" {
 data "aws_vpc_endpoint_service" "s3" {
   count = "${var.create_vpc && var.enable_s3_endpoint ? 1 : 0}"
 
-  service      = "s3"
+  service = "s3"
 }
 
 resource "aws_vpc_endpoint" "s3" {
@@ -219,7 +231,7 @@ resource "aws_vpc_endpoint_route_table_association" "public_s3" {
 data "aws_vpc_endpoint_service" "dynamodb" {
   count = "${var.create_vpc && var.enable_dynamodb_endpoint ? 1 : 0}"
 
-  service      = "dynamodb"
+  service = "dynamodb"
 }
 
 resource "aws_vpc_endpoint" "dynamodb" {
@@ -247,9 +259,21 @@ resource "aws_vpc_endpoint_route_table_association" "public_dynamodb" {
 # VPC Endpoint for SSM
 ######################
 data "aws_vpc_endpoint_service" "ssm" {
-  count = "${var.create_vpc && var.enable_ssm_endpoint["enable"] ? 1 : 0}"
+  count = "${var.create_vpc && var.enable_ssm_endpoint ? 1 : 0}"
 
-  service      = "ssm"
+  service = "ssm"
+}
+
+resource "aws_vpc_endpoint" "ssm" {
+  count = "${var.create_vpc && var.enable_ssm_endpoint ? 1 : 0}"
+
+  vpc_id            = "${aws_vpc.this.id}"
+  service_name      = "${data.aws_vpc_endpoint_service.ssm.service_name}"
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids  = ["${var.ssm_endpoint_security_group_ids}"]
+  subnet_ids          = ["${coalescelist(var.ssm_endpoint_subnet_ids, aws_subnet.private.*.id)}"]
+  private_dns_enabled = "${var.ssm_endpoint_private_dns_enabled}"
 }
 
 resource "aws_security_group" "ssm" {
@@ -263,45 +287,12 @@ resource "aws_security_group" "ssm" {
 resource "aws_security_group_rule" "vpc_endpoint_ssm_http" {
   count = "${var.create_vpc && var.enable_ssm_endpoint["enable"] ? 1 : 0}"
 
-  type                     = "ingress"
-  protocol                 = "tcp"
-  from_port                = 80
-  to_port                  = 80
-  security_group_id        = "${aws_security_group.ssm.id}"
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = 80
+  to_port           = 80
+  security_group_id = "${aws_security_group.ssm.id}"
 }
-
-# resource "aws_security_group_rule" "vpc_endpoint_ssm_https" {
-#   count = "${var.create_vpc && var.enable_ssm_endpoint ? 1 : 0}"
-
-#   type                     = "ingress"
-#   protocol                 = "tcp"
-#   from_port                = 443
-#   to_port                  = 443
-#   security_group_id        = "${aws_security_group.ssm.id}"
-# }
-
-# resource "aws_vpc_endpoint" "ssm" {
-#   count = "${var.create_vpc && var.enable_ssm_endpoint ? 1 : 0}"
-
-#   vpc_id            = "${aws_vpc.this.id}"
-#   service_name      = "${data.aws_vpc_endpoint_service.ssm.service_name}"
-#   vpc_endpoint_type = "Interface"
-#   subnet_ids        =
-# }
-
-# resource "aws_vpc_endpoint_route_table_association" "private_s3" {
-#   count = "${var.create_vpc && var.enable_s3_endpoint && length(var.private_subnets) > 0 ? 1 : 0}"
-
-#   vpc_endpoint_id = "${aws_vpc_endpoint.s3.id}"
-#   route_table_id  = "${element(aws_route_table.private.*.id, 0)}"
-# }
-
-# resource "aws_vpc_endpoint_route_table_association" "public_s3" {
-#   count = "${var.create_vpc && var.enable_s3_endpoint && length(var.public_subnets) > 0 ? 1 : 0}"
-
-#   vpc_endpoint_id = "${aws_vpc_endpoint.s3.id}"
-#   route_table_id  = "${aws_route_table.public.id}"
-# }
 
 ##########################
 # Route table association
