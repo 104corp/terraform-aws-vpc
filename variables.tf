@@ -80,6 +80,11 @@ variable "enable_s3_endpoint" {
   default     = false
 }
 
+variable "enable_ssm_endpoint" {
+  description = "Should be true ifm you want to provision an SSM endpoint to the VPC"
+  default     = {}
+}
+
 variable "map_public_ip_on_launch" {
   description = "Should be false if you do not want to auto-assign public IP on launch"
   default     = true
