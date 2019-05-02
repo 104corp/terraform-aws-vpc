@@ -1,3 +1,9 @@
+## 2019-05-03 - Release v2.0.0
+
+- Add private, public and nat subnet arn.
+- Add more network acls.
+- Add ssm, ssm-messages endpoint.
+
 ## 2018-07-23 - Release v1.0.0
 
 - release official v1.0.0 version.
