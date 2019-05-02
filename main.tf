@@ -54,7 +54,7 @@ resource "aws_vpc_dhcp_options" "this" {
 resource "aws_vpc_dhcp_options_association" "this" {
   count = "${var.create_vpc && var.enable_dhcp_options ? 1 : 0}"
 
-  vpc_id          = "${aws_vpc.this.id}"
+  vpc_id          = "${local.vpc_id}"
   dhcp_options_id = "${aws_vpc_dhcp_options.this.id}"
 }
 
@@ -64,7 +64,7 @@ resource "aws_vpc_dhcp_options_association" "this" {
 resource "aws_internet_gateway" "this" {
   count = "${var.create_vpc && length(var.public_subnets) > 0 ? 1 : 0}"
 
-  vpc_id = "${aws_vpc.this.id}"
+  vpc_id = "${local.vpc_id}"
 
   tags = "${merge(map("Name", format("%s", var.name)), var.igw_tags, var.tags)}"
 }
@@ -75,7 +75,7 @@ resource "aws_internet_gateway" "this" {
 resource "aws_route_table" "public" {
   count = "${var.create_vpc && length(var.public_subnets) > 0 ? 1 : 0}"
 
-  vpc_id = "${aws_vpc.this.id}"
+  vpc_id = "${local.vpc_id}"
 
   tags = "${merge(map("Name", format("%s-public", var.name)), var.public_route_table_tags, var.tags)}"
 }
@@ -99,7 +99,7 @@ resource "aws_route" "public_internet_gateway" {
 resource "aws_route_table" "private" {
   count = "${var.create_vpc && local.max_subnet_length > 0 ? local.nat_gateway_count : 0}"
 
-  vpc_id = "${aws_vpc.this.id}"
+  vpc_id = "${local.vpc_id}"
 
   tags = "${merge(map("Name", (var.single_nat_gateway ? "${var.name}-private" : format("%s-private-%s", var.name, element(var.azs, count.index)))), var.private_route_table_tags, var.tags)}"
 
@@ -116,7 +116,7 @@ resource "aws_route_table" "private" {
 resource "aws_route_table" "nat" {
   count = "${var.create_vpc && length(var.nat_subnets) > 0 ? 1 : 0}"
 
-  vpc_id = "${aws_vpc.this.id}"
+  vpc_id = "${local.vpc_id}"
 
   tags = "${merge(map("Name", "${var.name}-nat"), var.nat_route_table_tags, var.tags)}"
 }
@@ -127,7 +127,7 @@ resource "aws_route_table" "nat" {
 resource "aws_subnet" "public" {
   count = "${var.create_vpc && length(var.public_subnets) > 0 && (!var.one_nat_gateway_per_az || length(var.public_subnets) >= length(var.azs)) ? length(var.public_subnets) : 0}"
 
-  vpc_id                  = "${aws_vpc.this.id}"
+  vpc_id                  = "${local.vpc_id}"
   cidr_block              = "${var.public_subnets[count.index]}"
   availability_zone       = "${element(var.azs, count.index)}"
   map_public_ip_on_launch = "${var.map_public_ip_on_launch}"
@@ -141,7 +141,7 @@ resource "aws_subnet" "public" {
 resource "aws_subnet" "private" {
   count = "${var.create_vpc && length(var.private_subnets) > 0 ? length(var.private_subnets) : 0}"
 
-  vpc_id            = "${aws_vpc.this.id}"
+  vpc_id            = "${local.vpc_id}"
   cidr_block        = "${var.private_subnets[count.index]}"
   availability_zone = "${element(var.azs, count.index)}"
 
@@ -154,7 +154,7 @@ resource "aws_subnet" "private" {
 resource "aws_subnet" "nat" {
   count = "${var.create_vpc && length(var.nat_subnets) > 0 ? length(var.nat_subnets) : 0}"
 
-  vpc_id            = "${aws_vpc.this.id}"
+  vpc_id            = "${local.vpc_id}"
   cidr_block        = "${var.nat_subnets[count.index]}"
   availability_zone = "${element(var.azs, count.index)}"
 
@@ -193,105 +193,6 @@ resource "aws_nat_gateway" "this" {
   tags = "${merge(map("Name", format("%s-%s", var.name, element(var.azs, (var.single_nat_gateway ? 0 : count.index)))), var.nat_gateway_tags, var.tags)}"
 
   depends_on = ["aws_internet_gateway.this"]
-}
-
-######################
-# VPC Endpoint for S3
-######################
-data "aws_vpc_endpoint_service" "s3" {
-  count = "${var.create_vpc && var.enable_s3_endpoint ? 1 : 0}"
-
-  service = "s3"
-}
-
-resource "aws_vpc_endpoint" "s3" {
-  count = "${var.create_vpc && var.enable_s3_endpoint ? 1 : 0}"
-
-  vpc_id       = "${aws_vpc.this.id}"
-  service_name = "${data.aws_vpc_endpoint_service.s3.service_name}"
-}
-
-resource "aws_vpc_endpoint_route_table_association" "private_s3" {
-  count = "${var.create_vpc && var.enable_s3_endpoint && length(var.private_subnets) > 0 ? 1 : 0}"
-
-  vpc_endpoint_id = "${aws_vpc_endpoint.s3.id}"
-  route_table_id  = "${element(aws_route_table.private.*.id, 0)}"
-}
-
-resource "aws_vpc_endpoint_route_table_association" "public_s3" {
-  count = "${var.create_vpc && var.enable_s3_endpoint && length(var.public_subnets) > 0 ? 1 : 0}"
-
-  vpc_endpoint_id = "${aws_vpc_endpoint.s3.id}"
-  route_table_id  = "${aws_route_table.public.id}"
-}
-
-############################
-# VPC Endpoint for DynamoDB
-############################
-data "aws_vpc_endpoint_service" "dynamodb" {
-  count = "${var.create_vpc && var.enable_dynamodb_endpoint ? 1 : 0}"
-
-  service = "dynamodb"
-}
-
-resource "aws_vpc_endpoint" "dynamodb" {
-  count = "${var.create_vpc && var.enable_dynamodb_endpoint ? 1 : 0}"
-
-  vpc_id       = "${aws_vpc.this.id}"
-  service_name = "${data.aws_vpc_endpoint_service.dynamodb.service_name}"
-}
-
-resource "aws_vpc_endpoint_route_table_association" "private_dynamodb" {
-  count = "${var.create_vpc && var.enable_dynamodb_endpoint && length(var.private_subnets) > 0 ? 1 : 0}"
-
-  vpc_endpoint_id = "${aws_vpc_endpoint.dynamodb.id}"
-  route_table_id  = "${element(aws_route_table.private.*.id, 0)}"
-}
-
-resource "aws_vpc_endpoint_route_table_association" "public_dynamodb" {
-  count = "${var.create_vpc && var.enable_dynamodb_endpoint && length(var.public_subnets) > 0 ? 1 : 0}"
-
-  vpc_endpoint_id = "${aws_vpc_endpoint.dynamodb.id}"
-  route_table_id  = "${aws_route_table.public.id}"
-}
-
-######################
-# VPC Endpoint for SSM
-######################
-data "aws_vpc_endpoint_service" "ssm" {
-  count = "${var.create_vpc && var.enable_ssm_endpoint ? 1 : 0}"
-
-  service = "ssm"
-}
-
-resource "aws_vpc_endpoint" "ssm" {
-  count = "${var.create_vpc && var.enable_ssm_endpoint ? 1 : 0}"
-
-  vpc_id            = "${aws_vpc.this.id}"
-  service_name      = "${data.aws_vpc_endpoint_service.ssm.service_name}"
-  vpc_endpoint_type = "Interface"
-
-  security_group_ids  = ["${var.ssm_endpoint_security_group_ids}"]
-  subnet_ids          = ["${coalescelist(var.ssm_endpoint_subnet_ids, aws_subnet.private.*.id)}"]
-  private_dns_enabled = "${var.ssm_endpoint_private_dns_enabled}"
-}
-
-resource "aws_security_group" "ssm" {
-  count = "${var.create_vpc && var.enable_ssm_endpoint["enable"] ? 1 : 0}"
-
-  name_prefix = "vpc-endpoint-ssm-"
-  description = "SSM VPC Endpoint Security Group"
-  vpc_id      = "${aws_vpc.this.id}"
-}
-
-resource "aws_security_group_rule" "vpc_endpoint_ssm_http" {
-  count = "${var.create_vpc && var.enable_ssm_endpoint["enable"] ? 1 : 0}"
-
-  type              = "ingress"
-  protocol          = "tcp"
-  from_port         = 80
-  to_port           = 80
-  security_group_id = "${aws_security_group.ssm.id}"
 }
 
 ##########################
