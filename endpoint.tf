@@ -75,7 +75,7 @@ resource "aws_vpc_endpoint" "ssm" {
   vpc_endpoint_type = "Interface"
 
   security_group_ids  = ["${aws_security_group.ssm.id}", "${var.ssm_endpoint_security_group_ids}"]
-  subnet_ids          = ["${coalescelist(var.ssm_endpoint_subnet_ids, aws_subnet.private.*.id)}"]
+  subnet_ids          = ["${var.ssm_endpoint_subnet_ids}"]
   private_dns_enabled = "${var.ssm_endpoint_private_dns_enabled}"
 }
 
@@ -90,6 +90,7 @@ resource "aws_security_group" "ssm" {
 resource "aws_security_group_rule" "vpc_endpoint_ssm_https" {
   count = "${var.create_vpc && var.enable_ssm_endpoint ? 1 : 0}"
 
+  cidr_blocks       = ["${var.cidr}"]
   type              = "ingress"
   protocol          = "tcp"
   from_port         = 443
@@ -114,7 +115,7 @@ resource "aws_vpc_endpoint" "ssmmessages" {
   vpc_endpoint_type = "Interface"
 
   security_group_ids  = ["${aws_security_group.ssmmessages.id}", "${var.ssmmessages_endpoint_security_group_ids}"]
-  subnet_ids          = ["${coalescelist(var.ssmmessages_endpoint_subnet_ids, aws_subnet.private.*.id)}"]
+  subnet_ids          = ["${var.ssmmessages_endpoint_subnet_ids}"]
   private_dns_enabled = "${var.ssmmessages_endpoint_private_dns_enabled}"
 }
 
@@ -129,9 +130,90 @@ resource "aws_security_group" "ssmmessages" {
 resource "aws_security_group_rule" "vpc_endpoint_ssm_messages_https" {
   count = "${var.create_vpc && var.enable_ssmmessages_endpoint ? 1 : 0}"
 
+  cidr_blocks       = ["${var.cidr}"]
   type              = "ingress"
   protocol          = "tcp"
   from_port         = 443
   to_port           = 443
   security_group_id = "${aws_security_group.ssmmessages.id}"
+}
+
+###############################
+# VPC Endpoint for EC2
+###############################
+data "aws_vpc_endpoint_service" "ec2" {
+  count = "${var.create_vpc && var.enable_ec2_endpoint ? 1 : 0}"
+
+  service = "ec2"
+}
+
+resource "aws_vpc_endpoint" "ec2" {
+  count = "${var.create_vpc && var.enable_ec2_endpoint ? 1 : 0}"
+
+  vpc_id            = "${local.vpc_id}"
+  service_name      = "${data.aws_vpc_endpoint_service.ec2.service_name}"
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids  = ["${aws_security_group.ec2.id}", "${var.ec2_endpoint_security_group_ids}"]
+  subnet_ids          = ["${var.ec2_endpoint_subnet_ids}"]
+  private_dns_enabled = "${var.ec2_endpoint_private_dns_enabled}"
+}
+
+resource "aws_security_group" "ec2" {
+  count = "${var.create_vpc && var.enable_ec2_endpoint ? 1 : 0}"
+
+  name_prefix = "vpc-endpoint-ec2-"
+  description = "EC2 VPC Endpoint Security Group"
+  vpc_id      = "${local.vpc_id}"
+}
+
+resource "aws_security_group_rule" "vpc_endpoint_ec2_https" {
+  count = "${var.create_vpc && var.enable_ec2_endpoint ? 1 : 0}"
+
+  cidr_blocks       = ["${var.cidr}"]
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = 443
+  to_port           = 443
+  security_group_id = "${aws_security_group.ec2.id}"
+}
+
+###############################
+# VPC Endpoint for EC2 MESSAGES
+###############################
+data "aws_vpc_endpoint_service" "ec2messages" {
+  count = "${var.create_vpc && var.enable_ec2messages_endpoint ? 1 : 0}"
+
+  service = "ec2messages"
+}
+
+resource "aws_vpc_endpoint" "ec2messages" {
+  count = "${var.create_vpc && var.enable_ec2messages_endpoint ? 1 : 0}"
+
+  vpc_id            = "${local.vpc_id}"
+  service_name      = "${data.aws_vpc_endpoint_service.ec2messages.service_name}"
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids  = ["${aws_security_group.ec2messages.id}", "${var.ec2messages_endpoint_security_group_ids}"]
+  subnet_ids          = ["${var.ec2messages_endpoint_subnet_ids}"]
+  private_dns_enabled = "${var.ec2messages_endpoint_private_dns_enabled}"
+}
+
+resource "aws_security_group" "ec2messages" {
+  count = "${var.create_vpc && var.enable_ec2messages_endpoint ? 1 : 0}"
+
+  name_prefix = "vpc-endpoint-ec2-messages-"
+  description = "EC2 MESSAGES VPC Endpoint Security Group"
+  vpc_id      = "${local.vpc_id}"
+}
+
+resource "aws_security_group_rule" "vpc_endpoint_ec2_messages_https" {
+  count = "${var.create_vpc && var.enable_ec2messages_endpoint ? 1 : 0}"
+
+  cidr_blocks       = ["${var.cidr}"]
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = 443
+  to_port           = 443
+  security_group_id = "${aws_security_group.ec2messages.id}"
 }
