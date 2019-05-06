@@ -313,6 +313,21 @@ variable "default_network_acl_tags" {
   default     = {}
 }
 
+variable "public_acl_tags" {
+  description = "Additional tags for the public subnets network ACL"
+  default     = {}
+}
+
+variable "private_acl_tags" {
+  description = "Additional tags for the public subnets network ACL"
+  default     = {}
+}
+
+variable "nat_acl_tags" {
+  description = "Additional tags for the public subnets network ACL"
+  default     = {}
+}
+
 variable "public_dedicated_network_acl" {
   description = "Whether to use dedicated network ACL (not default) and custom rules for public subnets"
   default     = false
