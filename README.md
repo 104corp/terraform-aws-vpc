@@ -141,101 +141,6 @@ Terraform version 0.10.3 or newer is required for this module to work.
 * [Complete VPC](https://github.com/104corp/terraform-aws-vpc/tree/master/examples/complete-vpc)
 * [Manage Default VPC](https://github.com/104corp/terraform-aws-vpc/tree/master/examples/manage-default-vpc)
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-
-## Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|:----:|:-----:|:-----:|
-| azs | A list of availability zones in the region | string | `<list>` | no |
-| cidr | The CIDR block for the VPC. Default value is a valid CIDR, but not acceptable by AWS and should be overriden | string | `0.0.0.0/0` | no |
-| default_vpc_enable_classiclink | Should be true to enable ClassicLink in the Default VPC | string | `false` | no |
-| default_vpc_enable_dns_hostnames | Should be true to enable DNS hostnames in the Default VPC | string | `false` | no |
-| default_vpc_enable_dns_support | Should be true to enable DNS support in the Default VPC | string | `true` | no |
-| default_vpc_name | Name to be used on the Default VPC | string | `` | no |
-| default_vpc_tags | Additional tags for the Default VPC | string | `<map>` | no |
-| dhcp_options_domain_name | Specifies DNS name for DHCP options set | string | `` | no |
-| dhcp_options_domain_name_servers | Specify a list of DNS server addresses for DHCP options set, default to AWS provided | list | `<list>` | no |
-| dhcp_options_netbios_name_servers | Specify a list of netbios servers for DHCP options set | list | `<list>` | no |
-| dhcp_options_netbios_node_type | Specify netbios node_type for DHCP options set | string | `` | no |
-| dhcp_options_ntp_servers | Specify a list of NTP servers for DHCP options set | list | `<list>` | no |
-| dhcp_options_tags | Additional tags for the DHCP option set | string | `<map>` | no |
-| elasticache_subnet_tags | Additional tags for the elasticache subnets | string | `<map>` | no |
-| elasticache_subnets | A list of elasticache subnets | list | `<list>` | no |
-| enable_dhcp_options | Should be true if you want to specify a DHCP options set with a custom domain name, DNS servers, NTP servers, netbios servers, and/or netbios server type | string | `false` | no |
-| enable_dns_hostnames | Should be true to enable DNS hostnames in the VPC | string | `false` | no |
-| enable_dns_support | Should be true to enable DNS support in the VPC | string | `true` | no |
-| enable_dynamodb_endpoint | Should be true if you want to provision a DynamoDB endpoint to the VPC | string | `false` | no |
-| enable_s3_endpoint | Should be true if you want to provision an S3 endpoint to the VPC | string | `false` | no |
-| enable_vpn_gateway | Should be true if you want to create a new VPN Gateway resource and attach it to the VPC | string | `false` | no |
-| external_nat_ip_ids | List of EIP IDs to be assigned to the NAT Gateways (used in combination with reuse_nat_ips) | list | `<list>` | no |
-| igw_tags | Additional tags for the internet gateway | string | `<map>` | no |
-| instance_tenancy | A tenancy option for instances launched into the VPC | string | `default` | no |
-| manage_default_vpc | Should be true to adopt and manage Default VPC | string | `false` | no |
-| map_public_ip_on_launch | Should be false if you do not want to auto-assign public IP on launch | string | `true` | no |
-| name | Name to be used on all the resources as identifier | string | `` | no |
-| nat_eip_tags | Additional tags for the NAT EIP | string | `<map>` | no |
-| nat_gateway_tags | Additional tags for the NAT gateways | string | `<map>` | no |
-| one_nat_gateway_per_az | Should be true if you want only one NAT Gateway per availability zone. Requires `var.azs` to be set, and the number of `public_subnets` created to be greater than or equal to the number of availability zones specified in `var.azs`. | string | `false` | no |
-| private_route_table_tags | Additional tags for the private route tables | string | `<map>` | no |
-| private_subnet_tags | Additional tags for the private subnets | string | `<map>` | no |
-| private_subnets | A list of private subnets inside the VPC | string | `<list>` | no |
-| propagate_private_route_tables_vgw | Should be true if you want route table propagation | string | `false` | no |
-| propagate_public_route_tables_vgw | Should be true if you want route table propagation | string | `false` | no |
-| public_route_table_tags | Additional tags for the public route tables | string | `<map>` | no |
-| public_subnet_tags | Additional tags for the public subnets | string | `<map>` | no |
-| public_subnets | A list of public subnets inside the VPC | string | `<list>` | no |
-| reuse_nat_ips | Should be true if you don't want EIPs to be created for your NAT Gateways and will instead pass them in via the 'external_nat_ip_ids' variable | string | `false` | no |
-| single_nat_gateway | Should be true if you want to provision a single shared NAT Gateway across all of your private networks | string | `false` | no |
-| tags | A map of tags to add to all resources | string | `<map>` | no |
-| vpc_tags | Additional tags for the VPC | string | `<map>` | no |
-| vpn_gateway_id | ID of VPN Gateway to attach to the VPC | string | `` | no |
-| vpn_gateway_tags | Additional tags for the VPN gateway | string | `<map>` | no |
-
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| default_network_acl_id | The ID of the default network ACL |
-| default_route_table_id | The ID of the default route table |
-| default_security_group_id | The ID of the security group created by default on VPC creation |
-| default_vpc_cidr_block | The CIDR block of the VPC |
-| default_vpc_default_network_acl_id | The ID of the default network ACL |
-| default_vpc_default_route_table_id | The ID of the default route table |
-| default_vpc_default_security_group_id | The ID of the security group created by default on VPC creation |
-| default_vpc_enable_dns_hostnames | Whether or not the VPC has DNS hostname support |
-| default_vpc_enable_dns_support | Whether or not the VPC has DNS support |
-| default_vpc_id | Default VPC |
-| default_vpc_instance_tenancy | Tenancy of instances spin up within VPC |
-| default_vpc_main_route_table_id | The ID of the main route table associated with this VPC |
-| elasticache_subnet_group | ID of elasticache subnet group |
-| elasticache_subnet_group_name | Name of elasticache subnet group |
-| elasticache_subnets | List of IDs of elasticache subnets |
-| elasticache_subnets_cidr_blocks | List of cidr_blocks of elasticache subnets |
-| igw_id | Internet Gateway |
-| nat_ids | List of allocation ID of Elastic IPs created for AWS NAT Gateway |
-| nat_public_ips | List of public Elastic IPs created for AWS NAT Gateway |
-| natgw_ids | List of NAT Gateway IDs |
-| private_route_table_ids | List of IDs of private route tables |
-| private_subnets | Subnets |
-| private_subnets_cidr_blocks | List of cidr_blocks of private subnets |
-| public_route_table_ids | Route tables |
-| public_subnets | List of IDs of public subnets |
-| public_subnets_cidr_blocks | List of cidr_blocks of public subnets |
-| vgw_id | VPN Gateway |
-| vpc_cidr_block | The CIDR block of the VPC |
-| vpc_enable_dns_hostnames | Whether or not the VPC has DNS hostname support |
-| vpc_enable_dns_support | Whether or not the VPC has DNS support |
-| vpc_endpoint_dynamodb_id | The ID of VPC endpoint for DynamoDB |
-| vpc_endpoint_dynamodb_pl_id | The prefix list for the DynamoDB VPC endpoint. |
-| vpc_endpoint_s3_id | VPC Endpoints |
-| vpc_endpoint_s3_pl_id | The prefix list for the S3 VPC endpoint. |
-| vpc_id | VPC |
-| vpc_instance_tenancy | Tenancy of instances spin up within VPC |
-| vpc_main_route_table_id | The ID of the main route table associated with this VPC |
-
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-
 ## Tests
 
 This module has been packaged with [awspec](https://github.com/k1LoW/awspec) tests through test kitchen. To run them:
@@ -247,7 +152,6 @@ gem install bundler; bundle install
 ```
 3. Test using `bundle exec kitchen test` from the root of the repo.
 
-
 ## Authors
 
 Module is maintained by [104corp](https://github.com/104corp).
@@ -257,4 +161,135 @@ basic fork of [Anton Babenko](https://github.com/antonbabenko)
 ## License
 
 Apache 2 Licensed. See LICENSE for full details.
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|:----:|:-----:|:-----:|
+| assign\_generated\_ipv6\_cidr\_block | Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block | string | `"false"` | no |
+| azs | A list of availability zones in the region | list | `<list>` | no |
+| cidr | The CIDR block for the VPC. Default value is a valid CIDR, but not acceptable by AWS and should be overriden | string | `"0.0.0.0/0"` | no |
+| create\_vpc | Controls if VPC should be created (it affects almost all resources) | string | `"true"` | no |
+| default\_network\_acl\_egress | List of maps of egress rules to set on the Default Network ACL | list | `<list>` | no |
+| default\_network\_acl\_ingress | List of maps of ingress rules to set on the Default Network ACL | list | `<list>` | no |
+| default\_network\_acl\_name | Name to be used on the Default Network ACL | string | `""` | no |
+| default\_network\_acl\_tags | Additional tags for the Default Network ACL | map | `<map>` | no |
+| default\_vpc\_enable\_classiclink | Should be true to enable ClassicLink in the Default VPC | string | `"false"` | no |
+| default\_vpc\_enable\_dns\_hostnames | Should be true to enable DNS hostnames in the Default VPC | string | `"false"` | no |
+| default\_vpc\_enable\_dns\_support | Should be true to enable DNS support in the Default VPC | string | `"true"` | no |
+| default\_vpc\_name | Name to be used on the Default VPC | string | `""` | no |
+| default\_vpc\_tags | Additional tags for the Default VPC | map | `<map>` | no |
+| dhcp\_options\_domain\_name | Specifies DNS name for DHCP options set | string | `""` | no |
+| dhcp\_options\_domain\_name\_servers | Specify a list of DNS server addresses for DHCP options set, default to AWS provided | list | `<list>` | no |
+| dhcp\_options\_netbios\_name\_servers | Specify a list of netbios servers for DHCP options set | list | `<list>` | no |
+| dhcp\_options\_netbios\_node\_type | Specify netbios node_type for DHCP options set | string | `""` | no |
+| dhcp\_options\_ntp\_servers | Specify a list of NTP servers for DHCP options set | list | `<list>` | no |
+| dhcp\_options\_tags | Additional tags for the DHCP option set | map | `<map>` | no |
+| ec2\_endpoint\_private\_dns\_enabled | Whether or not to associate a private hosted zone with the specified VPC for EC2 endpoint | string | `"false"` | no |
+| ec2\_endpoint\_security\_group\_ids | The ID of one or more security groups to associate with the network interface for EC2 endpoint | list | `<list>` | no |
+| ec2\_endpoint\_subnet\_ids | The ID of one or more subnets in which to create a network interface for EC2 endpoint. Only a single subnet within an AZ is supported. If omitted, private subnets will be used. | list | `<list>` | no |
+| ec2messages\_endpoint\_private\_dns\_enabled | Whether or not to associate a private hosted zone with the specified VPC for EC2 messages endpoint | string | `"false"` | no |
+| ec2messages\_endpoint\_security\_group\_ids | The ID of one or more security groups to associate with the network interface for EC2 messages endpoint | list | `<list>` | no |
+| ec2messages\_endpoint\_subnet\_ids | The ID of one or more subnets in which to create a network interface for EC2 messages endpoint. Only a single subnet within an AZ is supported. If omitted, private subnets will be used. | list | `<list>` | no |
+| enable\_dhcp\_options | Should be true if you want to specify a DHCP options set with a custom domain name, DNS servers, NTP servers, netbios servers, and/or netbios server type | string | `"false"` | no |
+| enable\_dns\_hostnames | Should be true to enable DNS hostnames in the VPC | string | `"false"` | no |
+| enable\_dns\_support | Should be true to enable DNS support in the VPC | string | `"true"` | no |
+| enable\_dynamodb\_endpoint | Should be true if you want to provision a DynamoDB endpoint to the VPC | string | `"false"` | no |
+| enable\_ec2\_endpoint | Should be true if you want to provision an EC2 endpoint to the VPC | string | `"false"` | no |
+| enable\_ec2messages\_endpoint | Should be true if you want to provision an EC2 messages endpoint to the VPC | string | `"false"` | no |
+| enable\_s3\_endpoint | Should be true if you want to provision an S3 endpoint to the VPC | string | `"false"` | no |
+| enable\_ssm\_endpoint | Should be true if you want to provision an SSM endpoint to the VPC | string | `"false"` | no |
+| enable\_ssmmessages\_endpoint | Should be true if you want to provision a SSMMESSAGES endpoint to the VPC | string | `"false"` | no |
+| enable\_vpn\_gateway | Should be true if you want to create a new VPN Gateway resource and attach it to the VPC | string | `"false"` | no |
+| external\_nat\_ip\_ids | List of EIP IDs to be assigned to the NAT Gateways (used in combination with reuse_nat_ips) | list | `<list>` | no |
+| igw\_tags | Additional tags for the internet gateway | map | `<map>` | no |
+| instance\_tenancy | A tenancy option for instances launched into the VPC | string | `"default"` | no |
+| manage\_default\_network\_acl | Should be true to adopt and manage Default Network ACL | string | `"false"` | no |
+| manage\_default\_vpc | Should be true to adopt and manage Default VPC | string | `"false"` | no |
+| map\_public\_ip\_on\_launch | Should be false if you do not want to auto-assign public IP on launch | string | `"true"` | no |
+| name | Name to be used on all the resources as identifier | string | `""` | no |
+| nat\_acl\_tags | Additional tags for the public subnets network ACL | map | `<map>` | no |
+| nat\_dedicated\_network\_acl | Whether to use dedicated network ACL (not default) and custom rules for nat subnets | string | `"false"` | no |
+| nat\_eip\_tags | Additional tags for the NAT EIP | map | `<map>` | no |
+| nat\_gateway\_tags | Additional tags for the NAT gateways | map | `<map>` | no |
+| nat\_inbound\_acl\_rules | NAT subnets inbound network ACLs | list | `<list>` | no |
+| nat\_outbound\_acl\_rules | NAT subnets outbound network ACLs | list | `<list>` | no |
+| nat\_route\_table\_tags | Additional tags for the intra route tables | map | `<map>` | no |
+| nat\_subnet\_suffix | Suffix to append to NAT subnets name | string | `"nat"` | no |
+| nat\_subnet\_tags | Additional tags for the intra subnets | map | `<map>` | no |
+| nat\_subnets | A list of nat subnets | list | `<list>` | no |
+| one\_nat\_gateway\_per\_az | Should be true if you want only one NAT Gateway per availability zone. Requires `var.azs` to be set, and the number of `public_subnets` created to be greater than or equal to the number of availability zones specified in `var.azs`. | string | `"false"` | no |
+| private\_acl\_tags | Additional tags for the public subnets network ACL | map | `<map>` | no |
+| private\_dedicated\_network\_acl | Whether to use dedicated network ACL (not default) and custom rules for private subnets | string | `"false"` | no |
+| private\_inbound\_acl\_rules | Private subnets inbound network ACLs | list | `<list>` | no |
+| private\_outbound\_acl\_rules | Private subnets outbound network ACLs | list | `<list>` | no |
+| private\_route\_table\_tags | Additional tags for the private route tables | map | `<map>` | no |
+| private\_subnet\_suffix | Suffix to append to private subnets name | string | `"private"` | no |
+| private\_subnet\_tags | Additional tags for the private subnets | map | `<map>` | no |
+| private\_subnets | A list of private subnets inside the VPC | list | `<list>` | no |
+| propagate\_private\_route\_tables\_vgw | Should be true if you want route table propagation | string | `"false"` | no |
+| propagate\_public\_route\_tables\_vgw | Should be true if you want route table propagation | string | `"false"` | no |
+| public\_acl\_tags | Additional tags for the public subnets network ACL | map | `<map>` | no |
+| public\_dedicated\_network\_acl | Whether to use dedicated network ACL (not default) and custom rules for public subnets | string | `"false"` | no |
+| public\_inbound\_acl\_rules | Public subnets inbound network ACLs | list | `<list>` | no |
+| public\_outbound\_acl\_rules | Public subnets outbound network ACLs | list | `<list>` | no |
+| public\_route\_table\_tags | Additional tags for the public route tables | map | `<map>` | no |
+| public\_subnet\_suffix | Suffix to append to public subnets name | string | `"public"` | no |
+| public\_subnet\_tags | Additional tags for the public subnets | map | `<map>` | no |
+| public\_subnets | A list of public subnets inside the VPC | list | `<list>` | no |
+| reuse\_nat\_ips | Should be true if you don't want EIPs to be created for your NAT Gateways and will instead pass them in via the 'external_nat_ip_ids' variable | string | `"false"` | no |
+| secondary\_cidr\_blocks | List of secondary CIDR blocks to associate with the VPC to extend the IP Address pool | list | `<list>` | no |
+| single\_nat\_gateway | Should be true if you want to provision a single shared NAT Gateway across all of your private networks | string | `"false"` | no |
+| ssm\_endpoint\_private\_dns\_enabled | Whether or not to associate a private hosted zone with the specified VPC for SSM endpoint | string | `"false"` | no |
+| ssm\_endpoint\_security\_group\_ids | The ID of one or more security groups to associate with the network interface for SSM endpoint | list | `<list>` | no |
+| ssm\_endpoint\_subnet\_ids | The ID of one or more subnets in which to create a network interface for SSM endpoint. Only a single subnet within an AZ is supported. If omitted, private subnets will be used. | list | `<list>` | no |
+| ssmmessages\_endpoint\_private\_dns\_enabled | Whether or not to associate a private hosted zone with the specified VPC for SSMMESSAGES endpoint | string | `"false"` | no |
+| ssmmessages\_endpoint\_security\_group\_ids | The ID of one or more security groups to associate with the network interface for SSMMESSAGES endpoint | list | `<list>` | no |
+| ssmmessages\_endpoint\_subnet\_ids | The ID of one or more subnets in which to create a network interface for SSMMESSAGES endpoint. Only a single subnet within an AZ is supported. If omitted, private subnets will be used. | list | `<list>` | no |
+| tags | A map of tags to add to all resources | map | `<map>` | no |
+| vpc\_tags | Additional tags for the VPC | map | `<map>` | no |
+| vpn\_gateway\_id | ID of VPN Gateway to attach to the VPC | string | `""` | no |
+| vpn\_gateway\_tags | Additional tags for the VPN gateway | map | `<map>` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| azs | List of AZs of the VPC |
+| default\_network\_acl\_id | The ID of the default network ACL |
+| default\_route\_table\_id | The ID of the default route table |
+| default\_security\_group\_id | The ID of the security group created by default on VPC creation |
+| default\_vpc\_cidr\_block | The CIDR block of the VPC |
+| default\_vpc\_default\_network\_acl\_id | The ID of the default network ACL |
+| default\_vpc\_default\_route\_table\_id | The ID of the default route table |
+| default\_vpc\_default\_security\_group\_id | The ID of the security group created by default on VPC creation |
+| default\_vpc\_enable\_dns\_hostnames | Whether or not the VPC has DNS hostname support |
+| default\_vpc\_enable\_dns\_support | Whether or not the VPC has DNS support |
+| default\_vpc\_id | The ID of the VPC |
+| default\_vpc\_instance\_tenancy | Tenancy of instances spin up within VPC |
+| default\_vpc\_main\_route\_table\_id | The ID of the main route table associated with this VPC |
+| igw\_id | The ID of the Internet Gateway |
+| nat\_ids | List of allocation ID of Elastic IPs created for AWS NAT Gateway |
+| nat\_public\_ips | List of public Elastic IPs created for AWS NAT Gateway |
+| nat\_route\_table\_ids | List of IDs of nat route tables |
+| nat\_subnets | List of IDs of nat subnets |
+| nat\_subnets\_cidr\_blocks | List of cidr_blocks of nat subnets |
+| natgw\_ids | List of NAT Gateway IDs |
+| private\_route\_table\_ids | List of IDs of private route tables |
+| private\_subnets | List of IDs of private subnets |
+| private\_subnets\_cidr\_blocks | List of cidr_blocks of private subnets |
+| public\_route\_table\_ids | List of IDs of public route tables |
+| public\_subnets | List of IDs of public subnets |
+| public\_subnets\_cidr\_blocks | List of cidr_blocks of public subnets |
+| vgw\_id | The ID of the VPN Gateway |
+| vpc\_cidr\_block | The CIDR block of the VPC |
+| vpc\_enable\_dns\_hostnames | Whether or not the VPC has DNS hostname support |
+| vpc\_enable\_dns\_support | Whether or not the VPC has DNS support |
+| vpc\_endpoint\_dynamodb\_id | The ID of VPC endpoint for DynamoDB |
+| vpc\_endpoint\_dynamodb\_pl\_id | The prefix list for the DynamoDB VPC endpoint. |
+| vpc\_endpoint\_s3\_id | The ID of VPC endpoint for S3 |
+| vpc\_endpoint\_s3\_pl\_id | The prefix list for the S3 VPC endpoint. |
+| vpc\_id | The ID of the VPC |
+| vpc\_instance\_tenancy | Tenancy of instances spin up within VPC |
+| vpc\_main\_route\_table\_id | The ID of the main route table associated with this VPC |
 
